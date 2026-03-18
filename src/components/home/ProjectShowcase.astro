@@ -1,0 +1,368 @@
+---
+import { Icon } from "astro-icon/components";
+
+type ProjectType = "web" | "mobile" | "software";
+
+interface Project {
+  title: string;
+  type: ProjectType;
+  imageUrls: string[];
+  deployedUrl?: string;
+  githubUrl?: string;
+  description: string;
+}
+
+const typeConfig: Record<ProjectType, { icon: string; label: string; class: string }> = {
+  web:      { icon: "lucide:globe",      label: "Web",      class: "bg-blue-50 text-blue-600" },
+  mobile:   { icon: "lucide:smartphone", label: "Mobile",   class: "bg-purple-50 text-purple-600" },
+  software: { icon: "lucide:server",     label: "Software", class: "bg-emerald-50 text-emerald-600" },
+};
+
+const projects: Project[] = [
+  {
+    title: "DevFlow",
+    type: "web",
+    imageUrls: [
+      "https://placehold.co/800x450/e2e8f0/64748b?text=DevFlow+1",
+      "https://placehold.co/800x450/dbeafe/3b82f6?text=DevFlow+2",
+      "https://placehold.co/800x450/dcfce7/16a34a?text=DevFlow+3",
+    ],
+    deployedUrl: "https://example.com",
+    githubUrl: "https://github.com",
+    description:
+      "A developer productivity dashboard that aggregates PRs, issues, and CI status across multiple repos in one unified view.",
+  },
+  {
+    title: "NativeCart",
+    type: "mobile",
+    imageUrls: [
+      "https://placehold.co/800x450/f3e8ff/9333ea?text=NativeCart+1",
+      "https://placehold.co/800x450/fae8ff/a855f7?text=NativeCart+2",
+    ],
+    githubUrl: "https://github.com",
+    description:
+      "A cross-platform e-commerce mobile app built with React Native, featuring offline support and real-time inventory sync.",
+  },
+  {
+    title: "Palette AI",
+    type: "web",
+    imageUrls: [
+      "https://placehold.co/800x450/fef9c3/ca8a04?text=Palette+AI+1",
+      "https://placehold.co/800x450/fef3c7/d97706?text=Palette+AI+2",
+    ],
+    deployedUrl: "https://example.com",
+    githubUrl: "https://github.com",
+    description:
+      "An AI-powered colour palette generator that extracts themes from images and exports to Figma, Tailwind, and CSS variables.",
+  },
+  {
+    title: "LogLens",
+    type: "software",
+    imageUrls: [
+      "https://placehold.co/800x450/dcfce7/15803d?text=LogLens+1",
+      "https://placehold.co/800x450/d1fae5/059669?text=LogLens+2",
+    ],
+    deployedUrl: "https://example.com",
+    description:
+      "A real-time log aggregation and search tool for distributed systems, with alerting and shareable query links.",
+  },
+  {
+    title: "Folio",
+    type: "web",
+    imageUrls: [
+      "https://placehold.co/800x450/ffe4e6/e11d48?text=Folio+1",
+      "https://placehold.co/800x450/fecdd3/f43f5e?text=Folio+2",
+    ],
+    githubUrl: "https://github.com",
+    description:
+      "A minimal CMS for designers to publish their portfolio with drag-and-drop layout control and one-click deployments.",
+  },
+  {
+    title: "MealMate",
+    type: "mobile",
+    imageUrls: [
+      "https://placehold.co/800x450/ffedd5/ea580c?text=MealMate+1",
+      "https://placehold.co/800x450/fed7aa/f97316?text=MealMate+2",
+    ],
+    deployedUrl: "https://example.com",
+    githubUrl: "https://github.com",
+    description:
+      "A recipe and meal-planning app that generates weekly grocery lists based on dietary preferences and pantry inventory.",
+  },
+];
+---
+
+<section class="mt-16">
+  <h2 class="text-2xl font-bold mb-8 text-gray-800">Projects</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {
+      projects.map((project, i) => (
+        <article class="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+          <!-- Image (clickable → gallery modal) -->
+          <button
+            class="open-gallery relative w-full h-44 overflow-hidden p-0 border-none cursor-zoom-in group"
+            data-images={JSON.stringify(project.imageUrls)}
+            data-title={project.title}
+            aria-label={`View ${project.title} gallery`}
+          >
+            <img
+              src={project.imageUrls[0]}
+              alt={project.title}
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            {project.imageUrls.length > 1 && (
+              <span class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full pointer-events-none">
+                1 / {project.imageUrls.length}
+              </span>
+            )}
+          </button>
+
+          <!-- Body -->
+          <div class="flex flex-col flex-1 p-4 gap-3">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-lg font-semibold text-gray-900 mb-0">{project.title}</h3>
+              <span class={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full shrink-0 ${typeConfig[project.type].class}`}>
+                <Icon name={typeConfig[project.type].icon} class="w-3.5 h-3.5" />
+                {typeConfig[project.type].label}
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed flex-1 mb-0">
+              {project.description}
+            </p>
+
+            <!-- Links -->
+            <div class="flex items-center gap-2 flex-wrap">
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors no-underline"
+                >
+                  <Icon name="lucide:github" class="w-4 h-4" />
+                  Code
+                </a>
+              )}
+
+              {project.deployedUrl && (
+                <>
+                  <a
+                    href={project.deployedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors no-underline"
+                  >
+                    <Icon name="lucide:external-link" class="w-4 h-4" />
+                    Live
+                  </a>
+
+                  <button
+                    data-url={project.deployedUrl}
+                    data-title={project.title}
+                    class="open-in-modal hidden lg:flex items-center gap-1.5 ml-auto text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer bg-transparent border-none p-0"
+                  >
+                    <Icon name="lucide:layout" class="w-4 h-4" />
+                    Open here
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<!-- iframe preview modal -->
+<div
+  id="project-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+>
+  <div class="relative w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+      <span id="modal-title" class="font-semibold text-gray-800"></span>
+      <button
+        id="modal-close"
+        class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border-none bg-transparent"
+        aria-label="Close"
+      >
+        <Icon name="lucide:x" class="w-5 h-5 text-gray-600" />
+      </button>
+    </div>
+    <iframe
+      id="modal-iframe"
+      src=""
+      class="flex-1 w-full border-none"
+      title="Project preview"
+    ></iframe>
+  </div>
+</div>
+
+<!-- Gallery modal -->
+<div
+  id="gallery-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+>
+  <div class="relative w-full max-w-4xl flex flex-col gap-3">
+    <!-- Close -->
+    <button
+      id="gallery-close"
+      class="absolute -top-10 right-0 p-1.5 text-white/70 hover:text-white transition-colors cursor-pointer border-none bg-transparent"
+      aria-label="Close gallery"
+    >
+      <Icon name="lucide:x" class="w-6 h-6" />
+    </button>
+
+    <!-- Image track -->
+    <div class="relative overflow-hidden rounded-xl bg-black aspect-video">
+      <div id="gallery-track" class="flex h-full transition-transform duration-500 ease-in-out"></div>
+
+      <!-- Prev / Next -->
+      <button
+        id="gallery-prev"
+        class="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer border-none"
+        aria-label="Previous"
+      >
+        <Icon name="lucide:chevron-left" class="w-5 h-5" />
+      </button>
+      <button
+        id="gallery-next"
+        class="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer border-none"
+        aria-label="Next"
+      >
+        <Icon name="lucide:chevron-right" class="w-5 h-5" />
+      </button>
+
+      <!-- Counter -->
+      <span
+        id="gallery-counter"
+        class="absolute bottom-3 right-4 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full"
+      ></span>
+    </div>
+
+    <!-- Dots -->
+    <div id="gallery-dots" class="flex justify-center gap-2"></div>
+  </div>
+</div>
+
+<script>
+  /* ── iframe preview modal ──────────────────────────────────── */
+  const modal      = document.getElementById("project-modal")!;
+  const iframe     = document.getElementById("modal-iframe") as HTMLIFrameElement;
+  const modalTitle = document.getElementById("modal-title")!;
+  const closeBtn   = document.getElementById("modal-close")!;
+
+  document.querySelectorAll<HTMLButtonElement>(".open-in-modal").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      iframe.src = btn.dataset.url!;
+      modalTitle.textContent = btn.dataset.title!;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    });
+  });
+
+  function closeModal() {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    iframe.src = "";
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+  /* ── gallery modal ─────────────────────────────────────────── */
+  const galleryModal   = document.getElementById("gallery-modal")!;
+  const galleryTrack   = document.getElementById("gallery-track")!;
+  const galleryCounter = document.getElementById("gallery-counter")!;
+  const galleryDots    = document.getElementById("gallery-dots")!;
+  const galleryPrev    = document.getElementById("gallery-prev")!;
+  const galleryNext    = document.getElementById("gallery-next")!;
+  const galleryClose   = document.getElementById("gallery-close")!;
+
+  let images: string[]   = [];
+  let current            = 0;
+  let autoTimer: ReturnType<typeof setInterval> | null = null;
+
+  function buildSlides(imgs: string[]) {
+    galleryTrack.innerHTML = "";
+    galleryDots.innerHTML  = "";
+
+    imgs.forEach((src, idx) => {
+      // slide
+      const slide = document.createElement("img");
+      slide.src   = src;
+      slide.alt   = `Slide ${idx + 1}`;
+      slide.className = "w-full h-full object-contain shrink-0 select-none";
+      slide.style.width = "100%";
+      galleryTrack.appendChild(slide);
+
+      // dot
+      const dot = document.createElement("button");
+      dot.className = "w-2 h-2 rounded-full transition-colors cursor-pointer border-none";
+      dot.setAttribute("aria-label", `Go to slide ${idx + 1}`);
+      dot.addEventListener("click", () => goTo(idx));
+      galleryDots.appendChild(dot);
+    });
+  }
+
+  function goTo(idx: number) {
+    current = (idx + images.length) % images.length;
+    galleryTrack.style.transform = `translateX(-${current * 100}%)`;
+    galleryCounter.textContent   = `${current + 1} / ${images.length}`;
+
+    galleryDots.querySelectorAll("button").forEach((d, i) => {
+      d.classList.toggle("bg-white",        i === current);
+      d.classList.toggle("bg-white/40",     i !== current);
+    });
+  }
+
+  function startAuto() {
+    stopAuto();
+    if (images.length > 1) {
+      autoTimer = setInterval(() => goTo(current + 1), 4000);
+    }
+  }
+
+  function stopAuto() {
+    if (autoTimer !== null) { clearInterval(autoTimer); autoTimer = null; }
+  }
+
+  function openGallery(imgs: string[]) {
+    images = imgs;
+    buildSlides(imgs);
+    goTo(0);
+    galleryModal.classList.remove("hidden");
+    galleryModal.classList.add("flex");
+    startAuto();
+  }
+
+  function closeGallery() {
+    stopAuto();
+    galleryModal.classList.add("hidden");
+    galleryModal.classList.remove("flex");
+    galleryTrack.innerHTML = "";
+    galleryDots.innerHTML  = "";
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".open-gallery").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const imgs = JSON.parse(btn.dataset.images!) as string[];
+      openGallery(imgs);
+    });
+  });
+
+  galleryPrev.addEventListener("click", () => { stopAuto(); goTo(current - 1); startAuto(); });
+  galleryNext.addEventListener("click", () => { stopAuto(); goTo(current + 1); startAuto(); });
+  galleryClose.addEventListener("click", closeGallery);
+  galleryModal.addEventListener("click", (e) => { if (e.target === galleryModal) closeGallery(); });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeModal(); closeGallery(); }
+    if (galleryModal.classList.contains("flex")) {
+      if (e.key === "ArrowLeft")  { stopAuto(); goTo(current - 1); startAuto(); }
+      if (e.key === "ArrowRight") { stopAuto(); goTo(current + 1); startAuto(); }
+    }
+  });
+</script>

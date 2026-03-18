@@ -1,8 +1,11 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import "../styles/global.css";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import ProjectShowcase from "../components/home/ProjectShowcase.astro";
+import TechStackShowcase from "../components/home/TechStackShowcase.astro";
 ---
 
 <!doctype html>
@@ -13,37 +16,111 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<section class="landing">
+				<h4 class="-mb-1">Hi, I am Dhruv</h4>
+				<p class="subheading">
+					a&nbsp;<span class="word-cycle">
+						<span class="word word-1">Fullstack Developer</span>
+						<span class="word word-2">Mobile App Developer</span>
+						<span class="word word-3">Software Engineer</span>
+					</span>
+				</p>
+				<p class="mt-6 text-lg text-gray-500 max-w-xl leading-relaxed">
+					I am a Software Engineer with expertise in <span
+						class="text-gray-800">web</span
+					> and
+					<span class="text-gray-800"
+						>cross-platform app development</span
+					>. I specialize in creating <span class="text-gray-800"
+						>scalable</span
+					> software with focus on User Experience and Business Requirements.
+				</p>
+				<p class="-mt-2 text-lg text-gray-500 max-w-xl leading-relaxed">
+					While that doesn't explain much, lets look at some of my <a
+						href="/projects"
+						class="inline-block px-1.5 py-1 rounded-md bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition-colors no-underline"
+						>projects</a
+					>.
+				</p>
+			</section>
+			<ProjectShowcase />
+			<TechStackShowcase />
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.landing {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		padding-top: 2em;
+	}
+
+	.subheading {
+		font-size: 1.5em;
+		display: flex;
+		align-items: baseline;
+		margin: 0;
+	}
+
+	/* Grid trick: all words occupy the same cell so the container
+	   naturally sizes to the widest word — no fixed width needed. */
+	.word-cycle {
+		display: inline-grid;
+		overflow: hidden;
+		height: 1.4em;
+		line-height: 1.4em;
+		vertical-align: bottom;
+	}
+
+	.word {
+		grid-area: 1 / 1;
+		opacity: 0;
+		transform: translateY(-100%);
+		animation: cycleWord 9s infinite;
+	}
+
+	/* Each word is active for 3 s out of every 9 s cycle.
+	   0 %  → 0.5 s  : fade in from above
+	   0.5 s → 2.5 s  : hold
+	   2.5 s → 3 s   : fade out downward
+	   3 s  → 9 s   : hidden (other words showing) */
+	@keyframes cycleWord {
+		0% {
+			opacity: 0;
+			transform: translateY(-100%);
+		}
+		5.56% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		27.78% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		33.33% {
+			opacity: 0;
+			transform: translateY(100%);
+		}
+		33.34%,
+		100% {
+			opacity: 0;
+			transform: translateY(-100%);
+		}
+	}
+
+	.word-1 {
+		animation-delay: 0s;
+		color: #6367ff;
+	}
+	.word-2 {
+		animation-delay: 3s;
+		color: #247ba0;
+	}
+	.word-3 {
+		animation-delay: 6s;
+		color: #e1ad01;
+	}
+</style>
