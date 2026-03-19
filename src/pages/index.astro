@@ -6,6 +6,7 @@ import Header from "../components/Header.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import ProjectShowcase from "../components/home/ProjectShowcase.astro";
 import TechStackShowcase from "../components/home/TechStackShowcase.astro";
+import GithubStats from "../components/home/GithubStats.astro";
 ---
 
 <!doctype html>
@@ -17,31 +18,37 @@ import TechStackShowcase from "../components/home/TechStackShowcase.astro";
 		<Header />
 		<main>
 			<section class="landing">
-				<h4 class="-mb-1">Hi, I am Dhruv</h4>
-				<p class="subheading">
-					a&nbsp;<span class="word-cycle">
-						<span class="word word-1">Fullstack Developer</span>
-						<span class="word word-2">Mobile App Developer</span>
-						<span class="word word-3">Software Engineer</span>
-					</span>
-				</p>
-				<p class="mt-6 text-lg text-gray-500 max-w-xl leading-relaxed">
-					I am a Software Engineer with expertise in <span
-						class="text-gray-800">web</span
-					> and
-					<span class="text-gray-800"
-						>cross-platform app development</span
-					>. I specialize in creating <span class="text-gray-800"
-						>scalable</span
-					> software with focus on User Experience and Business Requirements.
-				</p>
-				<p class="-mt-2 text-lg text-gray-500 max-w-xl leading-relaxed">
-					While that doesn't explain much, lets look at some of my <a
-						href="/projects"
-						class="inline-block px-1.5 py-1 rounded-md bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition-colors no-underline"
-						>projects</a
-					>.
-				</p>
+				<div class="landing-left">
+					<h4 class="-mb-1">Hi, I am Dhruv</h4>
+					<p class="subheading">
+						a&nbsp;<span class="word-cycle">
+							<span class="word word-1">Fullstack Developer</span>
+							<span class="word word-2">Mobile App Developer</span
+							>
+							<span class="word word-3">Software Engineer</span>
+						</span>
+					</p>
+					<p class="mt-4 text-lg text-gray-500 leading-relaxed">
+						I am a Software Engineer with expertise in <span
+							class="text-gray-800">web</span
+						> and
+						<span class="text-gray-800"
+							>cross-platform app development</span
+						>. I specialize in creating <span class="text-gray-800"
+							>scalable</span
+						> software with focus on User Experience and Business Requirements.
+					</p>
+					<p class="-mt-2 text-lg text-gray-500 leading-relaxed">
+						While that doesn't explain much, lets look at some of my <a
+							href="/projects"
+							class="inline-block px-1.5 py-1 rounded-md bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition-colors no-underline"
+							>projects</a
+						>.
+					</p>
+				</div>
+				<div class="landing-right">
+					<GithubStats />
+				</div>
 			</section>
 			<ProjectShowcase />
 			<TechStackShowcase />
@@ -52,10 +59,31 @@ import TechStackShowcase from "../components/home/TechStackShowcase.astro";
 
 <style>
 	.landing {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 5rem;
+		align-items: center;
+		padding-top: 2em;
+	}
+
+	.landing-left {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		padding-top: 2em;
+	}
+
+	.landing-right {
+		width: 280px;
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 768px) {
+		.landing {
+			grid-template-columns: 1fr;
+		}
+		.landing-right {
+			width: 100%;
+		}
 	}
 
 	.subheading {

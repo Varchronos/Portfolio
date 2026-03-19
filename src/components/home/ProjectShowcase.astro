@@ -6,6 +6,7 @@ type ProjectType = "web" | "mobile" | "software";
 interface Project {
   title: string;
   type: ProjectType;
+  wip?: boolean;
   imageUrls: string[];
   deployedUrl?: string;
   githubUrl?: string;
@@ -20,51 +21,55 @@ const typeConfig: Record<ProjectType, { icon: string; label: string; class: stri
 
 const projects: Project[] = [
   {
-    title: "DevFlow",
-    type: "web",
-    imageUrls: [
-      "https://placehold.co/800x450/e2e8f0/64748b?text=DevFlow+1",
-      "https://placehold.co/800x450/dbeafe/3b82f6?text=DevFlow+2",
-      "https://placehold.co/800x450/dcfce7/16a34a?text=DevFlow+3",
-    ],
-    deployedUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    description:
-      "A developer productivity dashboard that aggregates PRs, issues, and CI status across multiple repos in one unified view.",
-  },
-  {
-    title: "NativeCart",
+    title: "BharatBrainz App",
     type: "mobile",
     imageUrls: [
-      "https://placehold.co/800x450/f3e8ff/9333ea?text=NativeCart+1",
-      "https://placehold.co/800x450/fae8ff/a855f7?text=NativeCart+2",
+      "/images/projects/bharatbrainz/1.webp",
+      "/images/projects/bharatbrainz/2.webp",
+      "/images/projects/bharatbrainz/3.webp",
+      "/images/projects/bharatbrainz/4.webp",
+      "/images/projects/bharatbrainz/5.webp",
+      "/images/projects/bharatbrainz/6.webp",
+      "/images/projects/bharatbrainz/7.webp",
     ],
-    githubUrl: "https://github.com",
+    deployedUrl: "https://bharatbrainz.com/",
     description:
-      "A cross-platform e-commerce mobile app built with React Native, featuring offline support and real-time inventory sync.",
+      "A cross-platform enterprise level E-learning mobile app, build with React Native, featuring unlimited quizzes powered by AI (customizable + personalized), video lectures with recommendations & schools integration.",
   },
   {
-    title: "Palette AI",
+    title: "BharatBrainz Reports",
     type: "web",
     imageUrls: [
-      "https://placehold.co/800x450/fef9c3/ca8a04?text=Palette+AI+1",
-      "https://placehold.co/800x450/fef3c7/d97706?text=Palette+AI+2",
+            "/images/projects/bbzReports/1.webp",
+            "/images/projects/bbzReports/2.gif",
     ],
-    deployedUrl: "https://example.com",
-    githubUrl: "https://github.com",
     description:
-      "An AI-powered colour palette generator that extracts themes from images and exports to Figma, Tailwind, and CSS variables.",
+      "A Responsive performance Tracking Dashboard for BharatBrainz students. Provides a detailed report on course completion, performance history & recommendation grouped by subject/chapter/topic/concepts/learning outcomes.",
+      deployedUrl:'https://report.bharatbrainz.com/weeklyreport?pid=bAOH3DGDJt&offering=67162c6c1d0c898346662a85,'
   },
   {
-    title: "LogLens",
-    type: "software",
+    title: "Classroomz",
+    type: "web",
     imageUrls: [
-      "https://placehold.co/800x450/dcfce7/15803d?text=LogLens+1",
-      "https://placehold.co/800x450/d1fae5/059669?text=LogLens+2",
+       "/images/projects/classroomz/1.webp",
+       "/images/projects/classroomz/2.webp",
+       "/images/projects/classroomz/3.gif",
+       "/images/projects/classroomz/4.webp",
     ],
-    deployedUrl: "https://example.com",
+    deployedUrl: "https://classroomz.bharatbrainz.com/home",
     description:
-      "A real-time log aggregation and search tool for distributed systems, with alerting and shareable query links.",
+      "A feature-rich institute & classroom management tool for teachers and faculties, with end to end integration with BharatBrainz app. Highly customizable assignment creation + tracking & faculty management. ",
+  },
+  {
+    title: "CobaltDocs",
+    type: "mobile",
+    imageUrls: [
+      "https://placehold.co/800x450/dcfce7/15803d?text=CobaltDocs",
+    ],
+    githubUrl: "https://github.com/Varchronos/cobaltDocs",
+    wip:true,
+    description:
+      "A minimalistic & secure AI-powered Document Vault.Supports quick copy, semantic search and expiry tracking.",
   },
   {
     title: "Folio",
@@ -109,7 +114,7 @@ const projects: Project[] = [
             <img
               src={project.imageUrls[0]}
               alt={project.title}
-              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
             />
             {project.imageUrls.length > 1 && (
               <span class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full pointer-events-none">
@@ -121,7 +126,15 @@ const projects: Project[] = [
           <!-- Body -->
           <div class="flex flex-col flex-1 p-4 gap-3">
             <div class="flex items-center justify-between gap-2">
-              <h3 class="text-lg font-semibold text-gray-900 mb-0">{project.title}</h3>
+              <div class="flex items-center gap-2 min-w-0">
+                <h3 class="text-lg font-semibold text-gray-900 mb-0 truncate">{project.title}</h3>
+                {project.wip && (
+                  <span class="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 bg-amber-100 text-amber-700 border border-amber-200">
+                    <Icon name="lucide:construction" class="w-3 h-3" />
+                    WIP
+                  </span>
+                )}
+              </div>
               <span class={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full shrink-0 ${typeConfig[project.type].class}`}>
                 <Icon name={typeConfig[project.type].icon} class="w-3.5 h-3.5" />
                 {typeConfig[project.type].label}
@@ -283,7 +296,6 @@ const projects: Project[] = [
 
   let images: string[]   = [];
   let current            = 0;
-  let autoTimer: ReturnType<typeof setInterval> | null = null;
 
   function buildSlides(imgs: string[]) {
     galleryTrack.innerHTML = "";
@@ -318,28 +330,15 @@ const projects: Project[] = [
     });
   }
 
-  function startAuto() {
-    stopAuto();
-    if (images.length > 1) {
-      autoTimer = setInterval(() => goTo(current + 1), 4000);
-    }
-  }
-
-  function stopAuto() {
-    if (autoTimer !== null) { clearInterval(autoTimer); autoTimer = null; }
-  }
-
   function openGallery(imgs: string[]) {
     images = imgs;
     buildSlides(imgs);
     goTo(0);
     galleryModal.classList.remove("hidden");
     galleryModal.classList.add("flex");
-    startAuto();
   }
 
   function closeGallery() {
-    stopAuto();
     galleryModal.classList.add("hidden");
     galleryModal.classList.remove("flex");
     galleryTrack.innerHTML = "";
@@ -353,16 +352,16 @@ const projects: Project[] = [
     });
   });
 
-  galleryPrev.addEventListener("click", () => { stopAuto(); goTo(current - 1); startAuto(); });
-  galleryNext.addEventListener("click", () => { stopAuto(); goTo(current + 1); startAuto(); });
+  galleryPrev.addEventListener("click", () => goTo(current - 1));
+  galleryNext.addEventListener("click", () => goTo(current + 1));
   galleryClose.addEventListener("click", closeGallery);
   galleryModal.addEventListener("click", (e) => { if (e.target === galleryModal) closeGallery(); });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeModal(); closeGallery(); }
     if (galleryModal.classList.contains("flex")) {
-      if (e.key === "ArrowLeft")  { stopAuto(); goTo(current - 1); startAuto(); }
-      if (e.key === "ArrowRight") { stopAuto(); goTo(current + 1); startAuto(); }
+      if (e.key === "ArrowLeft")  goTo(current - 1);
+      if (e.key === "ArrowRight") goTo(current + 1);
     }
   });
 </script>
