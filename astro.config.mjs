@@ -13,4 +13,7 @@ export default defineConfig({
 	},
 	site: 'https://example.com',
 	integrations: [mdx(), sitemap(), icon()],
+	image: {
+		domains: ["placehold.co", "bharatbrainz.com", "report.bharatbrainz.com", "classroomz.bharatbrainz.com"],
+	},
 });
