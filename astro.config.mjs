@@ -14,7 +14,7 @@ export default defineConfig({
       plugins: [tailwindcss()]
 	},
 
-  site: 'https://example.com',
+  site: 'https://dhruvrajak.dev',
   integrations: [mdx(), sitemap(), icon()],
 
   image: {
