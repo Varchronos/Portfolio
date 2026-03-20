@@ -1,9 +1,14 @@
 ---
 const USERNAME = "Varchronos";
 
-// import.meta.env works in local dev; Cloudflare secrets are runtime values via Astro.locals
-const runtime = (Astro.locals as any)?.runtime;
-const TOKEN: string | undefined = runtime?.env?.GITHUB_TOKEN ?? import.meta.env.GITHUB_TOKEN;
+// Cloudflare Workers (prod): env is accessed via cloudflare:workers module in Astro v6+
+// Local dev: falls back to import.meta.env
+let TOKEN: string | undefined = import.meta.env.GITHUB_TOKEN;
+try {
+  // @ts-ignore — cloudflare:workers is only available in the Workers runtime
+  const { env: cfEnv } = await import("cloudflare:workers");
+  if (cfEnv?.GITHUB_TOKEN) TOKEN = cfEnv.GITHUB_TOKEN;
+} catch { /* not in Workers runtime — local dev, TOKEN stays as import.meta.env value */ }
 
 const currentYear = new Date().getFullYear();
 
