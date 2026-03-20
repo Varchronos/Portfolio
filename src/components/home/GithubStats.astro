@@ -1,6 +1,10 @@
 ---
 const USERNAME = "Varchronos";
-const TOKEN = import.meta.env.GITHUB_TOKEN;
+
+// import.meta.env works in local dev; Cloudflare secrets are runtime values via Astro.locals
+const runtime = (Astro.locals as any)?.runtime;
+const TOKEN: string | undefined = runtime?.env?.GITHUB_TOKEN ?? import.meta.env.GITHUB_TOKEN;
+
 const currentYear = new Date().getFullYear();
 
 const headers: HeadersInit = {
@@ -14,7 +18,7 @@ interface Stats {
   commits: number | null;
 }
 
-// globalThis cache survives HMR module reloads in dev — only first request ever blocks
+// globalThis cache for local dev (per process); no-op on Cloudflare (fresh isolate each request)
 const g = globalThis as typeof globalThis & { __ghStats?: Promise<Stats> };
 
 
