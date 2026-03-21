@@ -1,23 +1,15 @@
 ---
+import { getSecret } from "astro:env/server";
+
 const USERNAME = "Varchronos";
 
-// Cloudflare Workers (prod): env is accessed via cloudflare:workers module in Astro v6+
-// Local dev: falls back to import.meta.env
-let TOKEN: string | undefined = import.meta.env.GITHUB_TOKEN;
-try {
-  // @ts-ignore — cloudflare:workers is only available in the Workers runtime
-  const { env: cfEnv } = await import("cloudflare:workers");
-  if (cfEnv?.GITHUB_TOKEN) TOKEN = cfEnv.GITHUB_TOKEN;
-} catch {
-  // local dev — falls back to import.meta.env
+async function getGithubToken() {
+  const token = getSecret("GITHUB_TOKEN");
+  if (!token) return null;
+  return token;
 }
 
 const currentYear = new Date().getFullYear();
-
-const headers: HeadersInit = {
-  Accept: "application/vnd.github+json",
-  ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
-};
 
 interface Stats {
   prsRaised: number | null;
@@ -34,6 +26,15 @@ async function withTimeout<T>(
 }
 
 async function doFetch(): Promise<Stats> {
+  let TOKEN: string | null = null;
+
+  TOKEN = await getGithubToken();
+
+  const headers: HeadersInit = {
+    Accept: "application/vnd.github+json",
+    ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
+  };
+
   async function safeCount(
     url: string,
     hdrs = headers,
