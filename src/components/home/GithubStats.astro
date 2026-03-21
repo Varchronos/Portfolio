@@ -8,7 +8,9 @@ try {
   // @ts-ignore — cloudflare:workers is only available in the Workers runtime
   const { env: cfEnv } = await import("cloudflare:workers");
   if (cfEnv?.GITHUB_TOKEN) TOKEN = cfEnv.GITHUB_TOKEN;
-} catch { /* not in Workers runtime — local dev, TOKEN stays as import.meta.env value */ }
+} catch {
+  // local dev — falls back to import.meta.env
+}
 
 const currentYear = new Date().getFullYear();
 
@@ -23,34 +25,38 @@ interface Stats {
   commits: number | null;
 }
 
-// globalThis cache for local dev (per process); no-op on Cloudflare (fresh isolate each request)
-const g = globalThis as typeof globalThis & { __ghStats?: Promise<Stats> };
-
-
-async function withTimeout<T>(promise: Promise<T>, ms = 5000): Promise<T | null> {
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms = 5000,
+): Promise<T | null> {
   const timeout = new Promise<null>((res) => setTimeout(() => res(null), ms));
   return Promise.race([promise, timeout]);
 }
 
 async function doFetch(): Promise<Stats> {
-  async function safeCount(url: string, hdrs = headers): Promise<number | null> {
+  async function safeCount(
+    url: string,
+    hdrs = headers,
+  ): Promise<number | null> {
     try {
       const result = await withTimeout(fetch(url, { headers: hdrs }));
       if (!result?.ok) return null;
       const data = await result.json();
       return data.total_count ?? null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   }
 
   const from = `${currentYear}-01-01T00:00:00Z`;
-  const to   = `${currentYear}-12-31T23:59:59Z`;
+  const to = `${currentYear}-12-31T23:59:59Z`;
 
   const [prsRaised, prsReviewed, graphqlRes] = await Promise.all([
     safeCount(
-      `https://api.github.com/search/issues?q=type:pr+author:${USERNAME}&per_page=1`
+      `https://api.github.com/search/issues?q=type:pr+author:${USERNAME}&per_page=1`,
     ),
     safeCount(
-      `https://api.github.com/search/issues?q=type:pr+reviewed-by:${USERNAME}&per_page=1`
+      `https://api.github.com/search/issues?q=type:pr+reviewed-by:${USERNAME}&per_page=1`,
     ),
     TOKEN
       ? withTimeout(
@@ -67,7 +73,7 @@ async function doFetch(): Promise<Stats> {
                 }
               }`,
             }),
-          })
+          }),
         )
       : Promise.resolve(null),
   ]);
@@ -78,16 +84,17 @@ async function doFetch(): Promise<Stats> {
     const col = gql?.data?.user?.contributionsCollection;
     if (col) {
       // totalCommitContributions = public; restrictedContributionsCount = private
-      commits = (col.totalCommitContributions ?? 0) + (col.restrictedContributionsCount ?? 0);
+      commits =
+        (col.totalCommitContributions ?? 0) +
+        (col.restrictedContributionsCount ?? 0);
     }
   }
 
   return { prsRaised, prsReviewed, commits };
 }
 
-if (!g.__ghStats) g.__ghStats = doFetch();
-const stats = await g.__ghStats;
-const fmt = (v: number | null) => v !== null ? v.toLocaleString() : "—";
+const stats = await doFetch();
+const fmt = (v: number | null) => (v !== null ? v.toLocaleString() : "—");
 
 const items = [
   {
@@ -117,23 +124,39 @@ const items = [
   <div class="brut-card bg-white p-5 flex flex-col gap-4">
     <!-- Header -->
     <div class="flex items-center gap-2 border-b-2 border-black pb-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"
+        ></path>
       </svg>
-      <span class="font-mono font-bold text-xs uppercase tracking-widest">{USERNAME}</span>
+      <span class="font-mono font-bold text-xs uppercase tracking-widest"
+        >{USERNAME}</span
+      >
     </div>
 
     <!-- Stats -->
     <div class="flex flex-col gap-3">
-      {items.map((item) => (
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
-            <span set:html={item.icon} />
-            <span class="font-mono text-xs uppercase tracking-wide text-gray-600">{item.label}</span>
+      {
+        items.map((item) => (
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+              <span set:html={item.icon} />
+              <span class="font-mono text-xs uppercase tracking-wide text-gray-600">
+                {item.label}
+              </span>
+            </div>
+            <span class="font-mono font-black text-xl tabular-nums">
+              {item.value}
+            </span>
           </div>
-          <span class="font-mono font-black text-xl tabular-nums">{item.value}</span>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </a>

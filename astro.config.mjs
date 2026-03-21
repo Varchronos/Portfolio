@@ -11,16 +11,24 @@ import cloudflare from '@astrojs/cloudflare';
 // https://astro.build/config
 export default defineConfig({
   vite: {
-      plugins: [tailwindcss()]
-	},
+    plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ['cookie', 'debug'],
+    },
+    optimizeDeps: {
+      include: ['debug']
+    }
+  },
 
   site: 'https://dhruvrajak.dev',
   integrations: [mdx(), sitemap(), icon()],
 
   image: {
-      service: passthroughImageService(),
-      domains: ["placehold.co", "bharatbrainz.com", "report.bharatbrainz.com", "classroomz.bharatbrainz.com"],
-	},
+    service: passthroughImageService(),
+    domains: ["placehold.co", "bharatbrainz.com", "report.bharatbrainz.com", "classroomz.bharatbrainz.com"],
+  },
 
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    prerenderEnvironment: 'node'
+  }),
 });
