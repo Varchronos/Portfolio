@@ -103,11 +103,23 @@ import { SITE_TITLE } from '../consts';
   </div>
 </nav>
 
+<!-- Mobile backdrop -->
+<div id="nav-backdrop" class="nav-backdrop" aria-hidden="true"></div>
+
 <script>
   const btn = document.getElementById('burger-btn')!;
   const menu = document.getElementById('navbar-menu')!;
   const iconBurger = document.getElementById('icon-burger')!;
   const iconClose = document.getElementById('icon-close')!;
+  const backdrop = document.getElementById('nav-backdrop')!;
+
+  function closeMenu() {
+    menu.classList.add('hidden');
+    iconBurger.classList.remove('hidden');
+    iconClose.classList.add('hidden');
+    btn.setAttribute('aria-expanded', 'false');
+    backdrop.classList.remove('nav-backdrop--open');
+  }
 
   btn.addEventListener('click', () => {
     const isOpen = !menu.classList.contains('hidden');
@@ -115,7 +127,10 @@ import { SITE_TITLE } from '../consts';
     iconBurger.classList.toggle('hidden', !isOpen);
     iconClose.classList.toggle('hidden', isOpen);
     btn.setAttribute('aria-expanded', String(!isOpen));
+    backdrop.classList.toggle('nav-backdrop--open', !isOpen);
   });
+
+  backdrop.addEventListener('click', closeMenu);
 
   document.getElementById('cta-btn')?.addEventListener('click', () => {
     const cta = document.getElementById('CTA');
@@ -126,15 +141,3 @@ import { SITE_TITLE } from '../consts';
     setTimeout(() => cta.classList.remove('cta-glow'), 1800);
   });
 </script>
-
-<style>
-  @keyframes ctaGlow {
-    0%   { box-shadow: 0 0 0 0 rgba(255,215,0,0); outline: 3px solid transparent; }
-    20%  { box-shadow: 0 0 28px 10px rgba(255,215,0,0.5); outline: 3px solid #FFD700; }
-    80%  { box-shadow: 0 0 28px 10px rgba(255,215,0,0.5); outline: 3px solid #FFD700; }
-    100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); outline: 3px solid transparent; }
-  }
-  :global(.cta-glow) {
-    animation: ctaGlow 1.8s ease forwards;
-  }
-</style>

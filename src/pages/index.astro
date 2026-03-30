@@ -18,7 +18,7 @@ import GithubStats from "../components/home/GithubStats.astro";
 	<body>
 		<Header />
 		<main>
-			<section class="landing">
+			<section class="landing" data-fade>
 				<div class="landing-left">
 					<p class="brut-label mb-2">Software Engineer</p>
 					<h4
@@ -65,6 +65,19 @@ import GithubStats from "../components/home/GithubStats.astro";
 		<Footer />
 	</body>
 </html>
+
+<script>
+	const observer = new IntersectionObserver(
+		(entries) =>
+			entries.forEach(
+				(e) => e.isIntersecting && e.target.classList.add("visible"),
+			),
+		{ threshold: 0.1 },
+	);
+	document
+		.querySelectorAll("[data-fade]")
+		.forEach((el) => observer.observe(el));
+</script>
 
 <script>
 	document
