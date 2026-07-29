@@ -10,6 +10,8 @@ interface Project {
   wip?: boolean;
   imageUrls: string[];
   deployedUrl?: string;
+  androidUrl?:string;
+  iosUrl?:string;
   githubUrl?: string;
   description: string;
 }
@@ -34,6 +36,8 @@ const projects: Project[] = [
       "/images/projects/bharatbrainz/7.webp",
     ],
     deployedUrl: "https://bharatbrainz.com/",
+    androidUrl:'https://play.google.com/store/apps/details?id=com.bharatbrainz.student&hl=en_IN',
+    iosUrl:'https://apps.apple.com/in/app/bharat-brainz/id6566176526',
     description:
       "A cross-platform enterprise level E-learning mobile app, build with React Native, featuring unlimited quizzes powered by AI (customizable + personalized), video lectures with recommendations & schools integration.",
   },
@@ -198,6 +202,30 @@ const projects: Project[] = [
                     <Icon name="lucide:external-link" class="w-4 h-4" />
                     Live
                   </a>
+
+                  {project.androidUrl && (
+                    <a
+                      href={project.androidUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wide text-black no-underline hover:underline"
+                    >
+                      <Icon name="lucide:square-play" class="w-4 h-4" />
+                      Android
+                    </a>
+                  )}
+
+                  {project.iosUrl && (
+                    <a
+                      href={project.iosUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wide text-black no-underline hover:underline"
+                    >
+                      <Icon name="lucide:apple" class="w-4 h-4" />
+                      iOS
+                    </a>
+                  )}
 
                   <button
                     data-url={project.deployedUrl}

@@ -30,21 +30,27 @@ async function doFetch(): Promise<Stats> {
 
   TOKEN = await getGithubToken();
 
-  const headers: HeadersInit = {
+  // The search endpoints work fine unauthenticated, so they're kept
+  // independent of TOKEN — a missing/expired token should only take
+  // down the commits stat (which requires GraphQL auth), not all three.
+  const searchHeaders: HeadersInit = { Accept: "application/vnd.github+json" };
+  const graphqlHeaders: HeadersInit = {
     Accept: "application/vnd.github+json",
-    ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
+    Authorization: `Bearer ${TOKEN}`,
+    "Content-Type": "application/json",
   };
 
-  async function safeCount(
-    url: string,
-    hdrs = headers,
-  ): Promise<number | null> {
+  async function safeCount(url: string): Promise<number | null> {
     try {
-      const result = await withTimeout(fetch(url, { headers: hdrs }));
-      if (!result?.ok) return null;
+      const result = await withTimeout(fetch(url, { headers: searchHeaders }));
+      if (!result?.ok) {
+        console.error(`GithubStats: ${url} failed with ${result?.status}`);
+        return null;
+      }
       const data = await result.json();
       return data.total_count ?? null;
-    } catch {
+    } catch (err) {
+      console.error(`GithubStats: ${url} threw`, err);
       return null;
     }
   }
@@ -63,7 +69,7 @@ async function doFetch(): Promise<Stats> {
       ? withTimeout(
           fetch("https://api.github.com/graphql", {
             method: "POST",
-            headers: { ...headers, "Content-Type": "application/json" },
+            headers: graphqlHeaders,
             body: JSON.stringify({
               query: `query {
                 user(login: "${USERNAME}") {
@@ -89,6 +95,8 @@ async function doFetch(): Promise<Stats> {
         (col.totalCommitContributions ?? 0) +
         (col.restrictedContributionsCount ?? 0);
     }
+  } else if (graphqlRes) {
+    console.error(`GithubStats: graphql failed with ${graphqlRes.status}`);
   }
 
   return { prsRaised, prsReviewed, commits };
